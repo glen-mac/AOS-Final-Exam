@@ -8,6 +8,12 @@
 \setlength{\parindent}{0pt}%
 \usepackage[margin=1.25in]{geometry}
 
+% fix backwards quotes
+\usepackage [english]{babel}
+\usepackage [autostyle, english = american]{csquotes}
+\MakeOuterQuote{"}
+
+
 \begin{document}
 
 \title{COMP9242: Analysis of Paper 2 \\ \vspace{0.75cm} \large \textit{Direct Inter-Process Communication (dIPC): Repurposing the CODOMs Architecture to Accelerate IPC}}
@@ -17,15 +23,29 @@
 \maketitle
 
 \section*{Summary}
+The paper presents an extension known as direct IPC (dIPC) to an existing architecture known as CODOM, that provides efficient inter-process communication. CODOM has been extended and re-purposed in the implementation of dIPC to allow threads to cross process boundaries. It does so by mapping processes into a shared address space and thereby eliminating the OS from the critical path of inter-process communication.
 
+What dIPC allows for is the ability for dIPC-enabled threads to perform regular function calls across separate processes - removing the overhead that is associated with calling into the kernel. dIPC is claimed to offer the same peformance when calling a function of another process as if the two processes were a single composite application, and does so without compromising the isolation of each.
+
+The CODOM architecture was designed to isolate software components within a single process while providing inter-component functions calls  with negligible overhead. dIPC builds on this to isolate multiple processes on a shared page table to provide secure inter-process function calls with the same negligible overhead.
+
+The implementation of dIPC is compared with that of regular RPC calls in Linux and IPC calls of the L4 microkernel. The authors state that dIPC enables a speed increase, when communicating between processes, of 64.12 and 8.87 times respectively. 
+
+The ability to call functions within other dIPC-enabled processes is done through predefined \textit{entry points} which are defined in the source prior to compilation. On the first call of a remote entry point of another process, a function-specific \textit{trusted proxy} is spawned. This proxy has access to each of the caller and callee processes, and bridges calls between them. This trusted proxy performs an in-place \textit{domain} or process switch, tracking  when and where cross-domain calls and returns are executed.
 
 \section*{Pros}
+The paper outlines the comparatively significant overhead in making a local RPC call, which includes context switching; page table switching; IO wait; kernel code execution; syscall dispatch trampoline; and finally syscall and userland code execution.
 
 
 \section*{Cons}
+It is mentioned that the provided compiler allows programmers to build isolation policies for their software - using PHP as an example stating that it does not need resource isolation with the web server, nor does it need state isolation when interacting with the database. The paper states that removing such isolations eliminates \textit{unnecessary} register and stack fiddling, further increasing IPC performance. However unsecured PHP applications on the web are a common system access point for attackers, and by removing resource isolation between the PHP interpreter and the web server; a maliciously controlled PHP process would be able to access the memory of the web server, potentially leaking confidential information.
 
 
 \section*{Criticisms}
+The paper makes a comparison between the operation latency of a baseline Linux system running a OLTP web application stack, and that of an "ideal" \textit{single-process} system running the same stack. No details of this single-process system are provided making it hard for the reader to determine how useful the results presented actually are. It is confusing to the reader whether such a system is desirable for actual use, besides that comment that it would be \textit{unsafe}, hence putting the weight of such a comparison into question.
+
+The paper makes forward references to ideas and methodologies explained later in the paper, without providing a brief description to allow the reader to continue with a basic understanding. An example of this is in section 2.2, where a forward reference is made to section 7.2 to describe the methodology used to obtain the results of the one-byte argument synchronous-IPC performance test.
+
 
 
 \section*{Benchmark Results}

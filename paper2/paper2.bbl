@@ -1,5 +1,11 @@
 \begin{thebibliography}{1}
 
+\bibitem{6853202}
+L.~Vilanova, M.~Ben-Yehuda, N.~Navarro, Y.~Etsion, and M.~Valero.
+\newblock Codoms: Protecting software with code-centric memory domains.
+\newblock In {\em 2014 ACM/IEEE 41st International Symposium on Computer
+  Architecture (ISCA)}, pages 469--480, June 2014.
+
 \bibitem{Vilanova:2017:DIC:3064176.3064197}
 Llu\'{\i}s Vilanova, Marc Jord\`{a}, Nacho Navarro, Yoav Etsion, and Mateo
   Valero.
