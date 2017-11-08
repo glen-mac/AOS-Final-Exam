@@ -21,7 +21,7 @@ The authors of this paper have set out to design and implement an operating syst
 
 Such a kernel has no concept of \textit{ring 0}, and hence no privilege level to escalate to - given malicious remote code execution. This is a consequence of the fact that the operating system components have been isolated and separated into what the authors call \textit{nodes} - which are simply individual hardware components such as the CPU, DMA controller and RAM, which communicate over a packet-switched network-on-chip (NoC).
 
-The modularisation of the typical kernel into many independant hardware state machines has the affect of making formal verification easier, and what the authors believe to be an improvement in parallelism.
+The modularisation of the typical kernel into many independant hardware state machines has the effect of making formal verification easier, and what the authors believe to be an improvement in parallelism.
 
 The threat-model that the kernel was designed around does not consider the impact that an attacker in physical locality to the machine would have - and hence only considers a remote actor. The authors of the paper list the following as actions that are not possible given a scenario in which an attacker has unprivileged code execution within a user application:
 \begin{itemize}
