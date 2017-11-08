@@ -36,7 +36,7 @@ The ability to call functions within other dIPC-enabled processes is done throug
 Each domain is associated with a tag in a CODOM page table, and the page table has a per-page tag to associate each page with a domain. Every domain is  associated with an \textit{Access Protection List} (APL) which contains tags in the same address space as code pages in the domain that owns the APL can access, along with their permissions.
 
 \section*{Pros}
-The paper outlines the comparatively significant overhead in making a local RPC call, which includes context switching; page table switching; IO wait; kernel code execution; syscall dispatch trampoline; and finally syscall and userland code execution.
+The paper outlines the comparatively significant overhead in making a traditional RPC call, which includes context switching; page table switching; IO wait; kernel code execution; syscall dispatch trampoline; and finally syscall and userland code execution.
 
 Backwards compatibility was a focus of the implementation, allowing dIPC-enabled processes to make either traditional RPC calls or dIPC calls. This allows for incremental adoption in applications of a system compatible with dIPC.
 
@@ -58,12 +58,15 @@ The paper makes a comparison between the operation latency of a baseline Linux s
 
 The paper makes forward references to ideas and methodologies explained later in the paper, without providing a brief description to allow the reader to continue with a basic understanding. An example of this is in section 2.2, where a forward reference is made to section 7.2 to describe the methodology used to obtain the results of the one-byte argument synchronous-IPC performance test.
 
+The concept of capabilities used to share arbitrary data buffers is discussed. It is mentioned that capabilities are created and destroyed by user code using special hardware instructions. However, the paper disregards the idea that capabilities can be forged or tampered with by a guarantee from CODOM. This is done without any explanation or reason - which would be beneficial as capabilities seem to be a security critical component of the system.
+
 
 \section*{Benchmark Results}
 In the comparison of dIPC and existing primitives with regards to added execution time in Figure 6; the pinned CPU tests for the semaphores, pipe and Local RPC are not performed - although they are for dIPC. It would have been interesting to have included these - along with the L4 microkernel IPC tests to ensure an appropriate comparison. The lack of such tests seems like there is something being held back.
 
 A heavy emphasis is made on the performance of making a dIPC between domains of the same process. The main benefit of dIPC is being able to make cross-process function calls with little over-head, so the paper should actually focus on the performance of making cross-process calls. Comparing internal-process dIPC with traditional RPC and Syscalls is not a very fair comparison.
 
+The benchmark illustrated in Figure 2, the \textit{time breakdown of different IPC primitives}, is a very insightful benchmark - showing the constituent functions of each IPC primitive. Although it would have been beneficial for the paper to include and contrast a dIPC call among those listed - as interfacing with a proxy still introduces a slight overhead and one that would have made an interesting comparison. 
 
 
 \nocite{*}
