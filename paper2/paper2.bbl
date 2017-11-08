@@ -1,0 +1,11 @@
+\begin{thebibliography}{1}
+
+\bibitem{Vilanova:2017:DIC:3064176.3064197}
+Llu\'{\i}s Vilanova, Marc Jord\`{a}, Nacho Navarro, Yoav Etsion, and Mateo
+  Valero.
+\newblock Direct inter-process communication (dipc): Repurposing the codoms
+  architecture to accelerate ipc.
+\newblock In {\em Proceedings of the Twelfth European Conference on Computer
+  Systems}, EuroSys '17, pages 16--31, New York, NY, USA, 2017. ACM.
+
+\end{thebibliography}
