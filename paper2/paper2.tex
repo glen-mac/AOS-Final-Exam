@@ -42,23 +42,29 @@ Backwards compatibility was a focus of the implementation, allowing dIPC-enabled
 
 Although processes, have a new page-table tag and APL abstraction - CODOMs still respect the per-page protection bits (RWX) in the page table; preventing a domain that has write access to a page in another domain from writing if the page is actually set to be read-only.
 
-To provide further performance gains, CODOMs provides an independent software-managed APL cache which contains the protection information of recently executed domains.
+To provide further performance gains, CODOMs provides an independent software-managed APL cache which contains the protection information of recently executed domains. Paired with this, dIPC allows passing arguments by reference, as opposed to copying data across processes as is the case in traditional RPC.
+
+When making domain switches to execute a function that an entry point has been provided for in another domain, dIPC provides isolation properties that enable the zeroing of registers and the splitting of stacks between domains. This is done so that the callee is not able to pull confidential information from the calling process' stack or registers.
 
 
 \section*{Cons}
 It is mentioned that the provided compiler allows programmers to build isolation policies for their software - using PHP as an example stating that it does not need resource isolation with the web server, nor does it need state isolation when interacting with the database. The paper states that removing such isolations eliminates \textit{unnecessary} register and stack fiddling, further increasing IPC performance. However unsecured PHP applications on the web are a common system access point for attackers, and by removing resource isolation between the PHP interpreter and the web server; a maliciously controlled PHP process would be able to access the memory of the web server, potentially leaking confidential information.
 
-On top of providing read and write access between domains, the ability to set a per-page privileged capability bit, enabling the execution of privileged instructions in userland, is provided. The paper states this is to \textit{eliminate the need for system call instructions and privilege mode switches}. The paper does not cover how this per-page privilege bit is set, which would be a target for exploit writers if it were possible to do so dynamically - like is the case with creating and destroying domains in dIPC. The security implications of such a feature is not touched on - but given a scenario where a maliciously-controlled domain has write access to a page in any domain that has the privileged capability bit enabled, an attacker could easily perform privilege escalation.
+On top of providing read and write access between domains, the ability to set a per-page privileged capability bit, enabling the execution of privileged instructions in userland, is provided. The paper states this is to \textit{eliminate the need for system call instructions and privilege mode switches}. The paper does not cover how this per-page privilege bit is set, which would be a target for exploit writers if it were possible to do so dynamically - like is the case with creating and destroying domains in dIPC. The security implications of such a feature is not touched on - but given a scenario where a maliciously-controlled domain has write access to a page in any domain that has the privileged capability bit enabled; an attacker could easily perform privilege escalation.
 
 
 \section*{Criticisms}
-The paper makes a comparison between the operation latency of a baseline Linux system running a OLTP web application stack, and that of an "ideal" \textit{single-process} system running the same stack. No details of this single-process system are provided making it hard for the reader to determine how useful the results presented actually are. It is confusing to the reader whether such a system is desirable for actual use, besides that comment that it would be \textit{unsafe}, hence putting the weight of such a comparison into question.
+The paper makes a comparison between the operation latency of a baseline Linux system running a OLTP web application stack, and that of an "ideal" \textit{single-process} system running the same stack. No details of this single-process system are provided until section 7.4 making it hard for the reader to determine how useful the results presented actually are. It is confusing to the reader whether such a system is desirable for actual use, besides that comment that it would be \textit{unsafe}, hence putting the weight of such a comparison into question.
 
 The paper makes forward references to ideas and methodologies explained later in the paper, without providing a brief description to allow the reader to continue with a basic understanding. An example of this is in section 2.2, where a forward reference is made to section 7.2 to describe the methodology used to obtain the results of the one-byte argument synchronous-IPC performance test.
 
 
-
 \section*{Benchmark Results}
+In the comparison of dIPC and existing primitives with regards to added execution time in Figure 6; the pinned CPU tests for the semaphores, pipe and Local RPC are not performed - although they are for dIPC. It would have been interesting to have included these - along with the L4 microkernel IPC tests to ensure an appropriate comparison. The lack of such tests seems like there is something being held back.
+
+A heavy emphasis is made on the performance of making a dIPC between domains of the same process. The main benefit of dIPC is being able to make cross-process function calls with little over-head, so the paper should actually focus on the performance of making cross-process calls. Comparing internal-process dIPC with traditional RPC and Syscalls is not a very fair comparison.
+
+
 
 \nocite{*}
 \bibliographystyle{plain}
