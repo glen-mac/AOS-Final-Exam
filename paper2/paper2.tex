@@ -33,12 +33,22 @@ The implementation of dIPC is compared with that of regular RPC calls in Linux a
 
 The ability to call functions within other dIPC-enabled processes is done through predefined \textit{entry points} which are defined in the source prior to compilation. On the first call of a remote entry point of another process, a function-specific \textit{trusted proxy} is spawned. This proxy has access to each of the caller and callee processes, and bridges calls between them. This trusted proxy performs an in-place \textit{domain} or process switch, tracking  when and where cross-domain calls and returns are executed.
 
+Each domain is associated with a tag in a CODOM page table, and the page table has a per-page tag to associate each page with a domain. Every domain is  associated with an \textit{Access Protection List} (APL) which contains tags in the same address space as code pages in the domain that owns the APL can access, along with their permissions.
+
 \section*{Pros}
 The paper outlines the comparatively significant overhead in making a local RPC call, which includes context switching; page table switching; IO wait; kernel code execution; syscall dispatch trampoline; and finally syscall and userland code execution.
+
+Backwards compatibility was a focus of the implementation, allowing dIPC-enabled processes to make either traditional RPC calls or dIPC calls. This allows for incremental adoption in applications of a system compatible with dIPC.
+
+Although processes, have a new page-table tag and APL abstraction - CODOMs still respect the per-page protection bits (RWX) in the page table; preventing a domain that has write access to a page in another domain from writing if the page is actually set to be read-only.
+
+To provide further performance gains, CODOMs provides an independent software-managed APL cache which contains the protection information of recently executed domains.
 
 
 \section*{Cons}
 It is mentioned that the provided compiler allows programmers to build isolation policies for their software - using PHP as an example stating that it does not need resource isolation with the web server, nor does it need state isolation when interacting with the database. The paper states that removing such isolations eliminates \textit{unnecessary} register and stack fiddling, further increasing IPC performance. However unsecured PHP applications on the web are a common system access point for attackers, and by removing resource isolation between the PHP interpreter and the web server; a maliciously controlled PHP process would be able to access the memory of the web server, potentially leaking confidential information.
+
+On top of providing read and write access between domains, the ability to set a per-page privileged capability bit, enabling the execution of privileged instructions in userland, is provided. The paper states this is to \textit{eliminate the need for system call instructions and privilege mode switches}. The paper does not cover how this per-page privilege bit is set, which would be a target for exploit writers if it were possible to do so dynamically - like is the case with creating and destroying domains in dIPC. The security implications of such a feature is not touched on - but given a scenario where a maliciously-controlled domain has write access to a page in any domain that has the privileged capability bit enabled, an attacker could easily perform privilege escalation.
 
 
 \section*{Criticisms}
