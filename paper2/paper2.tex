@@ -60,6 +60,10 @@ The paper makes forward references to ideas and methodologies explained later in
 
 The concept of capabilities used to share arbitrary data buffers is discussed. It is mentioned that capabilities are created and destroyed by user code using special hardware instructions. However, the paper disregards the idea that capabilities can be forged or tampered with by a guarantee from CODOM. This is done without any explanation or reason - which would be beneficial as capabilities seem to be a security critical component of the system.
 
+This paper seems to have a blind trust in its computing base - CODOMs. Alot of potential security issues have been ignored and handed off, stating that CODOMs handles all cases. This CODOM architecture is a large computing base and blind trust in it could prove to be detrimental.
+
+The paper relies on proxies for communicating between processes and inter-process function calling. However, not enough is said about the possibility of a process becoming rogue and arbitrarily jumping into the \textit{.text} section of another process sharing the same global address space, ignoring predefined exported entry points. A shared address space brings about a lot of questions - and some discussion into exploit mitigation would be beneficial.
+
 
 \section*{Benchmark Results}
 In the comparison of dIPC and existing primitives with regards to added execution time in Figure 6; the pinned CPU tests for the semaphores, pipe and Local RPC are not performed - although they are for dIPC. It would have been interesting to have included these - along with the L4 microkernel IPC tests to ensure an appropriate comparison. The lack of such tests seems like there is something being held back.
